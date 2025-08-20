@@ -3,262 +3,442 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Data Logger - Memory Storage</title>
+    <title>Data Logger App</title>
     <style>
-        body { 
-            font-family: Arial, sans-serif; 
-            padding: 20px; 
+        * {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+        }
+        
+        body {
             background: linear-gradient(135deg, #6a11cb 0%, #2575fc 100%);
+            color: #333;
             min-height: 100vh;
+            padding: 20px;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
         }
-        .container { 
-            background: white; 
-            padding: 25px; 
-            border-radius: 15px; 
-            box-shadow: 0 10px 30px rgba(0,0,0,0.2);
+        
+        .container {
+            width: 100%;
             max-width: 800px;
-            margin: 0 auto;
+            background-color: white;
+            border-radius: 15px;
+            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.2);
+            overflow: hidden;
+            margin: 20px 0;
         }
-        .warning-box { 
-            background: #fff3cd; 
-            color: #856404;
-            padding: 15px; 
-            margin: 15px 0; 
-            border-radius: 8px; 
-            border: 1px solid #ffeaa7;
+        
+        header {
+            background: linear-gradient(90deg, #4776E6 0%, #8E54E9 100%);
+            color: white;
+            padding: 20px;
             text-align: center;
         }
+        
+        h1 {
+            font-size: 2.2rem;
+            margin-bottom: 10px;
+        }
+        
+        .app-description {
+            font-size: 1.1rem;
+            opacity: 0.9;
+        }
+        
+        .warning-banner {
+            background: #fff3cd;
+            color: #856404;
+            padding: 15px;
+            text-align: center;
+            border-bottom: 1px solid #ffeaa7;
+        }
+        
+        .form-container {
+            padding: 25px;
+        }
+        
         .form-group {
             margin-bottom: 20px;
         }
+        
         label {
             display: block;
-            margin-bottom: 5px;
-            font-weight: bold;
+            margin-bottom: 8px;
+            font-weight: 600;
             color: #444;
         }
-        input, textarea, select { 
-            width: 100%; 
-            padding: 12px; 
-            border: 2px solid #ddd; 
-            border-radius: 8px; 
+        
+        input, select, textarea {
+            width: 100%;
+            padding: 14px;
+            border: 2px solid #ddd;
+            border-radius: 8px;
             font-size: 16px;
+            transition: border-color 0.3s;
         }
-        input:focus, textarea:focus, select:focus {
+        
+        input:focus, select:focus, textarea:focus {
             border-color: #4776E6;
             outline: none;
         }
-        button { 
+        
+        textarea {
+            min-height: 120px;
+            resize: vertical;
+        }
+        
+        button {
             background: linear-gradient(90deg, #4776E6 0%, #8E54E9 100%);
-            color: white; 
-            border: none; 
+            color: white;
+            border: none;
             padding: 15px 25px;
-            border-radius: 8px; 
+            border-radius: 8px;
             cursor: pointer;
             font-size: 18px;
-            font-weight: bold;
+            font-weight: 600;
             width: 100%;
-            margin: 5px 0;
+            transition: transform 0.3s, box-shadow 0.3s;
+            margin-bottom: 10px;
         }
+        
         button:hover {
-            opacity: 0.9;
+            transform: translateY(-2px);
+            box-shadow: 0 5px 15px rgba(71, 118, 230, 0.4);
         }
+        
+        button:active {
+            transform: translateY(0);
+        }
+        
+        .export-btn {
+            background: linear-gradient(90deg, #27ae60 0%, #2ecc71 100%);
+        }
+        
         .clear-btn {
             background: linear-gradient(90deg, #e74c3c 0%, #c0392b 100%);
         }
-        table { 
-            width: 100%; 
-            border-collapse: collapse; 
-            margin-top: 25px;
-            box-shadow: 0 3px 10px rgba(0,0,0,0.1);
+        
+        .log-container {
+            padding: 25px;
+            border-top: 1px solid #eee;
         }
-        th, td { 
-            border: 1px solid #ddd; 
-            padding: 12px; 
-            text-align: left; 
+        
+        h2 {
+            color: #4776E6;
+            margin-bottom: 20px;
+            text-align: center;
+            font-size: 1.8rem;
         }
-        th { 
-            background: linear-gradient(90deg, #4776E6 0%, #8E54E9 100%);
-            color: white;
+        
+        .entries-count {
+            text-align: center;
+            margin: 15px 0;
+            font-weight: 600;
+            color: #4776E6;
+            font-size: 1.2rem;
         }
-        tr:nth-child(even) {
+        
+        .log-entries {
+            max-height: 400px;
+            overflow-y: auto;
+            padding-right: 10px;
+        }
+        
+        .log-entry {
             background-color: #f8f9ff;
+            border-left: 5px solid #4776E6;
+            padding: 18px;
+            margin-bottom: 18px;
+            border-radius: 8px;
+            box-shadow: 0 3px 10px rgba(0, 0, 0, 0.08);
+            animation: fadeIn 0.5s ease-out;
         }
-        tr:hover {
-            background-color: #eef0ff;
+        
+        .log-header {
+            display: flex;
+            justify-content: space-between;
+            margin-bottom: 12px;
+            align-items: center;
+        }
+        
+        .log-name {
+            font-weight: bold;
+            color: #4776E6;
+            font-size: 1.2rem;
+        }
+        
+        .log-category {
+            background-color: #e0e6ff;
+            color: #4776E6;
+            padding: 5px 12px;
+            border-radius: 20px;
+            font-size: 0.9rem;
+            font-weight: 600;
+        }
+        
+        .log-message {
+            margin-bottom: 12px;
+            line-height: 1.5;
+        }
+        
+        .log-timestamp {
+            color: #777;
+            font-size: 0.9rem;
+            text-align: right;
+        }
+        
+        .empty-log {
+            text-align: center;
+            color: #777;
+            padding: 30px;
+            font-style: italic;
+        }
+        
+        .action-buttons {
+            display: flex;
+            gap: 10px;
+            margin-top: 20px;
+        }
+        
+        @keyframes fadeIn {
+            from {
+                opacity: 0;
+                transform: translateY(20px);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+        
+        footer {
+            color: white;
+            text-align: center;
+            margin-top: 20px;
+            opacity: 0.8;
+        }
+        
+        @media (max-width: 600px) {
+            .container {
+                border-radius: 10px;
+            }
+            
+            h1 {
+                font-size: 1.8rem;
+            }
+            
+            .form-container, .log-container {
+                padding: 20px;
+            }
         }
     </style>
 </head>
 <body>
     <div class="container">
-        <h1 style="text-align: center; color: #4776E6;">Data Logger App</h1>
+        <header>
+            <h1>Data Logger App</h1>
+            <p class="app-description">Store and manage your data entries</p>
+        </header>
         
-        <div class="warning-box">
-            ⚠️ <strong>Note:</strong> Data is stored in memory and will be lost when you close the app.
-            Use the Export button to save your data permanently.
+        <div class="warning-banner">
+            ⚠️ <strong>Note:</strong> Data is stored in memory. Export to save permanently.
         </div>
-
-        <form id="dataForm">
-            <div class="form-group">
-                <label for="name">Name:</label>
-                <input type="text" id="name" placeholder="Enter your name" required>
-            </div>
-            
-            <div class="form-group">
-                <label for="date">Date:</label>
-                <input type="date" id="date" required>
-            </div>
-            
-            <div class="form-group">
-                <label for="category">Category:</label>
-                <select id="category" required>
-                    <option value="">Select a category</option>
-                    <option value="work">Work</option>
-                    <option value="personal">Personal</option>
-                    <option value="ideas">Ideas</option>
-                    <option value="tasks">Tasks</option>
-                </select>
-            </div>
-            
-            <div class="form-group">
-                <label for="message">Message:</label>
-                <textarea id="message" placeholder="Enter your message" rows="3" required></textarea>
-            </div>
-            
-            <button type="submit">➕ Add Data Entry</button>
-        </form>
-
-        <div style="margin: 20px 0; text-align: center;">
-            <strong>Total Entries: <span id="entriesCount">0</span></strong>
+        
+        <div class="form-container">
+            <form id="dataForm">
+                <div class="form-group">
+                    <label for="name">Name</label>
+                    <input type="text" id="name" placeholder="Enter your name" required>
+                </div>
+                
+                <div class="form-group">
+                    <label for="date">Date</label>
+                    <input type="date" id="date" required>
+                </div>
+                
+                <div class="form-group">
+                    <label for="category">Category</label>
+                    <select id="category" required>
+                        <option value="">Select a category</option>
+                        <option value="work">Work</option>
+                        <option value="personal">Personal</option>
+                        <option value="ideas">Ideas</option>
+                        <option value="tasks">Tasks</option>
+                        <option value="other">Other</option>
+                    </select>
+                </div>
+                
+                <div class="form-group">
+                    <label for="message">Message/Notes</label>
+                    <textarea id="message" placeholder="Enter your message or notes" required></textarea>
+                </div>
+                
+                <button type="submit">Add Data Entry</button>
+            </form>
         </div>
-
-        <table>
-            <thead>
-                <tr>
-                    <th>Name</th>
-                    <th>Date</th>
-                    <th>Category</th>
-                    <th>Message</th>
-                    <th>Action</th>
-                </tr>
-            </thead>
-            <tbody id="tableBody">
-                <tr>
-                    <td colspan="5" style="text-align: center; color: #777;">No entries yet. Add your first entry above!</td>
-                </tr>
-            </tbody>
-        </table>
-
-        <div style="margin-top: 25px;">
-            <button onclick="exportData()" style="background: linear-gradient(90deg, #27ae60 0%, #2ecc71 100%);">
-                💾 Export Data to CSV
-            </button>
-            <button onclick="clearAllData()" class="clear-btn">
-                🗑️ Clear All Data
-            </button>
+        
+        <div class="log-container">
+            <h2>Logged Entries</h2>
+            <div class="entries-count">Total entries: <span id="entriesCount">0</span></div>
+            
+            <div id="logEntries" class="log-entries">
+                <div class="empty-log">No entries yet. Submit your first entry!</div>
+            </div>
+            
+            <div class="action-buttons">
+                <button class="export-btn" onclick="exportData()">📥 Export Data to CSV</button>
+                <button class="clear-btn" onclick="clearAllData()">🗑️ Clear All Data</button>
+            </div>
         </div>
     </div>
+    
+    <footer>
+        <p>Data Logger App | Works in MIT App Inventor</p>
+    </footer>
 
     <script>
         // SIMPLE MEMORY STORAGE (No localStorage needed!)
         let dataEntries = [];
         
-        // Load entries from memory
-        function loadLoggedEntries() {
-            const tableBody = document.getElementById('tableBody');
+        // Wait for the page to fully load
+        document.addEventListener('DOMContentLoaded', function() {
+            // Get form and log entries container
+            const form = document.getElementById('dataForm');
+            const logEntriesContainer = document.getElementById('logEntries');
             const entriesCount = document.getElementById('entriesCount');
             
-            if (dataEntries.length === 0) {
-                tableBody.innerHTML = '<tr><td colspan="5" style="text-align: center; color: #777;">No entries yet. Add your first entry above!</td></tr>';
-            } else {
-                tableBody.innerHTML = '';
-                dataEntries.forEach((entry, index) => {
-                    const row = document.createElement('tr');
-                    row.innerHTML = `
-                        <td>${entry.name}</td>
-                        <td>${entry.date}</td>
-                        <td>${entry.category}</td>
-                        <td>${entry.message}</td>
-                        <td>
-                            <button onclick="deleteEntry(${index})" style="background: #e74c3c; padding: 5px 10px; font-size: 12px;">
-                                Delete
-                            </button>
-                        </td>
-                    `;
-                    tableBody.appendChild(row);
-                });
-            }
-            
-            entriesCount.textContent = dataEntries.length;
-        }
-        
-        // Delete an entry
-        function deleteEntry(index) {
-            dataEntries.splice(index, 1);
+            // Load existing entries when the page loads
             loadLoggedEntries();
-        }
-        
-        // Clear all data
-        function clearAllData() {
-            if (confirm('Are you sure you want to delete all data?')) {
-                dataEntries = [];
-                loadLoggedEntries();
-                alert('All data has been cleared!');
-            }
-        }
-        
-        // Export data as CSV
-        function exportData() {
-            if (dataEntries.length === 0) {
-                alert('No data to export!');
-                return;
-            }
             
-            let csvContent = 'Name,Date,Category,Message\n';
-            dataEntries.forEach(entry => {
-                csvContent += `"${entry.name}","${entry.date}","${entry.category}","${entry.message.replace(/"/g, '""')}"\n`;
+            // Add event listener for form submission
+            form.addEventListener('submit', function(event) {
+                // Prevent the form from submitting the traditional way
+                event.preventDefault();
+                
+                // Get the values from the form fields
+                const name = document.getElementById('name').value;
+                const date = document.getElementById('date').value;
+                const category = document.getElementById('category').value;
+                const message = document.getElementById('message').value;
+                
+                // Get current timestamp
+                const timestamp = new Date().toLocaleString();
+                
+                // Create an entry object
+                const entry = {
+                    name,
+                    date,
+                    category,
+                    message,
+                    timestamp,
+                    id: Date.now() // Unique ID for each entry
+                };
+                
+                // Save the entry to memory
+                dataEntries.push(entry);
+                
+                // Add the entry to the display
+                addEntryToDisplay(entry);
+                
+                // Update entries count
+                updateEntriesCount();
+                
+                // Reset the form
+                form.reset();
+                
+                alert('Entry added successfully!');
             });
             
-            const encodedUri = encodeURI('data:text/csv;charset=utf-8,' + csvContent);
-            const link = document.createElement('a');
-            link.setAttribute('href', encodedUri);
-            link.setAttribute('download', 'data_logger_export.csv');
-            document.body.appendChild(link);
-            link.click();
-            document.body.removeChild(link);
+            // Function to load logged entries from memory
+            function loadLoggedEntries() {
+                // Clear the "no entries" message if there are entries
+                if (dataEntries.length > 0) {
+                    logEntriesContainer.innerHTML = '';
+                }
+                
+                // Add each entry to the display
+                dataEntries.forEach(entry => {
+                    addEntryToDisplay(entry);
+                });
+                
+                // Update entries count
+                updateEntriesCount();
+            }
             
-            alert('Data exported successfully! Download the CSV file from your browser downloads.');
-        }
-        
-        // Form submission
-        document.getElementById('dataForm').addEventListener('submit', function(event) {
-            event.preventDefault();
+            // Function to add an entry to the display
+            function addEntryToDisplay(entry) {
+                // Remove the "no entries" message if it exists
+                if (logEntriesContainer.querySelector('.empty-log')) {
+                    logEntriesContainer.innerHTML = '';
+                }
+                
+                // Create a new entry element
+                const entryElement = document.createElement('div');
+                entryElement.classList.add('log-entry');
+                
+                // Get category class for styling
+                const categoryClass = `category-${entry.category}`;
+                
+                // Create the HTML content for the entry
+                entryElement.innerHTML = `
+                    <div class="log-header">
+                        <span class="log-name">${entry.name}</span>
+                        <span class="log-category">${entry.category}</span>
+                    </div>
+                    <div class="log-message">${entry.message}</div>
+                    <div class="log-timestamp">Logged on: ${entry.timestamp}</div>
+                `;
+                
+                // Add the entry to the top of the log
+                logEntriesContainer.prepend(entryElement);
+            }
             
-            const name = document.getElementById('name').value;
-            const date = document.getElementById('date').value;
-            const category = document.getElementById('category').value;
-            const message = document.getElementById('message').value;
+            // Function to update entries count
+            function updateEntriesCount() {
+                entriesCount.textContent = dataEntries.length;
+            }
             
-            const entry = {
-                name,
-                date,
-                category,
-                message,
-                id: Date.now()
+            // Function to export data as CSV
+            window.exportData = function() {
+                if (dataEntries.length === 0) {
+                    alert('No data to export!');
+                    return;
+                }
+                
+                // Create CSV content
+                let csvContent = 'Name,Date,Category,Message,Timestamp\n';
+                
+                dataEntries.forEach(entry => {
+                    csvContent += `"${entry.name}","${entry.date}","${entry.category}","${entry.message.replace(/"/g, '""')}","${entry.timestamp}"\n`;
+                });
+                
+                // Create download link
+                const encodedUri = encodeURI('data:text/csv;charset=utf-8,' + csvContent);
+                const link = document.createElement('a');
+                link.setAttribute('href', encodedUri);
+                link.setAttribute('download', 'data_logger_export.csv');
+                document.body.appendChild(link);
+                
+                // Trigger download
+                link.click();
+                document.body.removeChild(link);
+                
+                alert('Data exported successfully! Check your downloads folder.');
             };
             
-            dataEntries.push(entry);
-            loadLoggedEntries();
-            
-            // Reset form
-            this.reset();
-            
-            alert('Entry added successfully!');
-        });
-        
-        // Initial load
-        document.addEventListener('DOMContentLoaded', function() {
-            loadLoggedEntries();
+            // Function to clear all data
+            window.clearAllData = function() {
+                if (confirm('Are you sure you want to delete all data? This cannot be undone.')) {
+                    dataEntries = [];
+                    logEntriesContainer.innerHTML = '<div class="empty-log">No entries yet. Submit your first entry!</div>';
+                    updateEntriesCount();
+                    alert('All data has been cleared!');
+                }
+            };
         });
     </script>
 </body>
