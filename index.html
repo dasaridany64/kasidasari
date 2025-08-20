@@ -3,524 +3,182 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Data Logger - Table Format</title>
+    <title>Data Logger Debug</title>
     <style>
-        * {
-            box-sizing: border-box;
-            margin: 0;
-            padding: 0;
-            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+        body { 
+            font-family: Arial, sans-serif; 
+            padding: 20px; 
+            background: #f0f0f0;
         }
-        
-        body {
-            background: linear-gradient(135deg, #6a11cb 0%, #2575fc 100%);
-            color: #333;
-            min-height: 100vh;
-            padding: 20px;
-            display: flex;
-            flex-direction: column;
-            align-items: center;
+        .container { 
+            background: white; 
+            padding: 20px; 
+            border-radius: 10px; 
+            box-shadow: 0 2px 5px rgba(0,0,0,0.1);
         }
-        
-        .container {
-            width: 100%;
-            max-width: 1200px;
-            background-color: white;
-            border-radius: 15px;
-            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.2);
-            overflow: hidden;
-            margin: 20px 0;
+        .debug-box { 
+            background: #ffe6e6; 
+            padding: 15px; 
+            margin: 10px 0; 
+            border-radius: 5px; 
+            border: 1px solid #ffcccc;
         }
-        
-        header {
-            background: linear-gradient(90deg, #4776E6 0%, #8E54E9 100%);
-            color: white;
-            padding: 20px;
-            text-align: center;
+        input, textarea, select, button { 
+            width: 100%; 
+            padding: 10px; 
+            margin: 5px 0; 
+            border: 1px solid #ccc; 
+            border-radius: 4px; 
         }
-        
-        h1 {
-            font-size: 2.2rem;
-            margin-bottom: 10px;
+        button { 
+            background: #4CAF50; 
+            color: white; 
+            border: none; 
+            padding: 12px; 
+            cursor: pointer; 
         }
-        
-        .app-description {
-            font-size: 1.1rem;
-            opacity: 0.9;
+        table { 
+            width: 100%; 
+            border-collapse: collapse; 
+            margin-top: 20px; 
         }
-        
-        .form-container {
-            padding: 25px;
+        th, td { 
+            border: 1px solid #ddd; 
+            padding: 8px; 
+            text-align: left; 
         }
-        
-        .form-group {
-            margin-bottom: 20px;
-        }
-        
-        label {
-            display: block;
-            margin-bottom: 8px;
-            font-weight: 600;
-            color: #444;
-        }
-        
-        input, select, textarea {
-            width: 100%;
-            padding: 14px;
-            border: 2px solid #ddd;
-            border-radius: 8px;
-            font-size: 16px;
-            transition: border-color 0.3s;
-        }
-        
-        input:focus, select:focus, textarea:focus {
-            border-color: #4776E6;
-            outline: none;
-        }
-        
-        textarea {
-            min-height: 120px;
-            resize: vertical;
-        }
-        
-        button {
-            background: linear-gradient(90deg, #4776E6 0%, #8E54E9 100%);
-            color: white;
-            border: none;
-            padding: 15px 25px;
-            border-radius: 8px;
-            cursor: pointer;
-            font-size: 18px;
-            font-weight: 600;
-            width: 100%;
-            transition: transform 0.3s, box-shadow 0.3s;
-            margin-bottom: 10px;
-        }
-        
-        button:hover {
-            transform: translateY(-2px);
-            box-shadow: 0 5px 15px rgba(71, 118, 230, 0.4);
-        }
-        
-        button:active {
-            transform: translateY(0);
-        }
-        
-        .export-btn {
-            background: linear-gradient(90deg, #27ae60 0%, #2ecc71 100%);
-        }
-        
-        .log-container {
-            padding: 25px;
-            border-top: 1px solid #eee;
-            overflow-x: auto;
-        }
-        
-        h2 {
-            color: #4776E6;
-            margin-bottom: 20px;
-            text-align: center;
-            font-size: 1.8rem;
-        }
-        
-        /* Table Styles */
-        .data-table {
-            width: 100%;
-            border-collapse: collapse;
-            margin-top: 20px;
-            box-shadow: 0 3px 10px rgba(0, 0, 0, 0.08);
-            border-radius: 8px;
-            overflow: hidden;
-        }
-        
-        .data-table th {
-            background: linear-gradient(90deg, #4776E6 0%, #8E54E9 100%);
-            color: white;
-            padding: 15px;
-            text-align: left;
-            font-weight: 600;
-            position: sticky;
-            top: 0;
-        }
-        
-        .data-table td {
-            padding: 15px;
-            border-bottom: 1px solid #eee;
-        }
-        
-        .data-table tr:nth-child(even) {
-            background-color: #f8f9ff;
-        }
-        
-        .data-table tr:hover {
-            background-color: #eef0ff;
-            transition: background-color 0.2s;
-        }
-        
-        .data-table tr:last-child td {
-            border-bottom: none;
-        }
-        
-        .category-badge {
-            padding: 5px 12px;
-            border-radius: 20px;
-            font-size: 0.85rem;
-            font-weight: 600;
-            display: inline-block;
-        }
-        
-        .category-work {
-            background-color: #ffe0e0;
-            color: #d32f2f;
-        }
-        
-        .category-personal {
-            background-color: #e0ffe0;
-            color: #388e3c;
-        }
-        
-        .category-ideas {
-            background-color: #e0f7fa;
-            color: #0097a7;
-        }
-        
-        .category-tasks {
-            background-color: #fff3e0;
-            color: #f57c00;
-        }
-        
-        .category-other {
-            background-color: #f3e5f5;
-            color: #7b1fa2;
-        }
-        
-        .action-btn {
-            background: none;
-            border: none;
-            color: #4776E6;
-            cursor: pointer;
-            padding: 5px;
-            margin: 0 5px;
-            font-size: 16px;
-            transition: color 0.3s;
-            width: auto;
-        }
-        
-        .action-btn:hover {
-            color: #d32f2f;
-            transform: none;
-            box-shadow: none;
-        }
-        
-        .empty-table {
-            text-align: center;
-            padding: 40px;
-            color: #777;
-            font-style: italic;
-        }
-        
-        .table-controls {
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-            margin-bottom: 15px;
-        }
-        
-        .entries-count {
-            font-weight: 600;
-            color: #4776E6;
-        }
-        
-        .export-section {
-            background: #f8f9ff;
-            padding: 15px;
-            border-radius: 8px;
-            margin-top: 20px;
-            text-align: center;
-        }
-        
-        @keyframes fadeIn {
-            from {
-                opacity: 0;
-                transform: translateY(20px);
-            }
-            to {
-                opacity: 1;
-                transform: translateY(0);
-            }
-        }
-        
-        footer {
-            color: white;
-            text-align: center;
-            margin-top: 20px;
-            opacity: 0.8;
-        }
-        
-        @media (max-width: 768px) {
-            .container {
-                border-radius: 10px;
-            }
-            
-            h1 {
-                font-size: 1.8rem;
-            }
-            
-            .form-container, .log-container {
-                padding: 20px;
-            }
-            
-            .data-table {
-                font-size: 14px;
-            }
-            
-            .data-table th, 
-            .data-table td {
-                padding: 10px 8px;
-            }
-            
-            .table-controls {
-                flex-direction: column;
-                gap: 10px;
-                align-items: flex-start;
-            }
+        th { 
+            background-color: #f2f2f2; 
         }
     </style>
 </head>
 <body>
     <div class="container">
-        <header>
-            <h1>Data Logger - Table View</h1>
-            <p class="app-description">Enter and manage your data in a structured table format</p>
-        </header>
+        <h1>Data Logger Debug Mode</h1>
         
-        <div class="form-container">
-            <form id="dataForm">
-                <div class="form-group">
-                    <label for="name">Name</label>
-                    <input type="text" id="name" placeholder="Enter your name" required>
-                </div>
-                
-                <div class="form-group">
-                    <label for="date">Date</label>
-                    <input type="date" id="date" required>
-                </div>
-                
-                <div class="form-group">
-                    <label for="category">Category</label>
-                    <select id="category" required>
-                        <option value="">Select a category</option>
-                        <option value="work">Work</option>
-                        <option value="personal">Personal</option>
-                        <option value="ideas">Ideas</option>
-                        <option value="tasks">Tasks</option>
-                        <option value="other">Other</option>
-                    </select>
-                </div>
-                
-                <div class="form-group">
-                    <label for="message">Message/Notes</label>
-                    <textarea id="message" placeholder="Enter your message or notes" required></textarea>
-                </div>
-                
-                <button type="submit">Add Data Entry</button>
-            </form>
+        <div class="debug-box" id="debugInfo">
+            <strong>Debug Information:</strong><br>
+            Status: Loading...
         </div>
-        
-        <div class="log-container">
-            <div class="table-controls">
-                <h2>Data Entries</h2>
-                <div class="entries-count">Total entries: <span id="entriesCount">0</span></div>
-            </div>
-            
-            <table class="data-table">
-                <thead>
-                    <tr>
-                        <th>Name</th>
-                        <th>Date</th>
-                        <th>Category</th>
-                        <th>Message</th>
-                        <th>Logged At</th>
-                        <th>Actions</th>
-                    </tr>
-                </thead>
-                <tbody id="tableBody">
-                    <tr>
-                        <td colspan="6" class="empty-table">No entries yet. Add your first entry above!</td>
-                    </tr>
-                </tbody>
-            </table>
-            
-            <div class="export-section">
-                <button class="export-btn" onclick="exportData()">📥 Export Data to CSV</button>
-                <p><small>Click to download all your data as a CSV file</small></p>
-            </div>
-        </div>
+
+        <form id="dataForm">
+            <input type="text" id="name" placeholder="Name" required>
+            <input type="date" id="date" required>
+            <select id="category" required>
+                <option value="">Select Category</option>
+                <option value="work">Work</option>
+                <option value="personal">Personal</option>
+            </select>
+            <textarea id="message" placeholder="Message" required></textarea>
+            <button type="submit">Add Entry</button>
+        </form>
+
+        <div id="debugOutput"></div>
+
+        <table>
+            <thead>
+                <tr>
+                    <th>Name</th>
+                    <th>Date</th>
+                    <th>Category</th>
+                    <th>Message</th>
+                </tr>
+            </thead>
+            <tbody id="tableBody">
+                <tr><td colspan="4">No data yet</td></tr>
+            </tbody>
+        </table>
+
+        <button onclick="clearAllData()" style="background: #ff4444; margin-top: 20px;">Clear All Data</button>
+        <button onclick="testLocalStorage()" style="background: #888;">Test Storage</button>
     </div>
-    
-    <footer>
-        <p>Data Logger Table App | Created with HTML, CSS, and JavaScript</p>
-    </footer>
 
     <script>
-        // Wait for the page to fully load
-        document.addEventListener('DOMContentLoaded', function() {
-            // Get form and table elements
-            const form = document.getElementById('dataForm');
-            const tableBody = document.getElementById('tableBody');
-            const entriesCount = document.getElementById('entriesCount');
-            
-            // Load existing entries when the page loads
+        // Debug function to show messages
+        function debugLog(message) {
+            document.getElementById('debugOutput').innerHTML += '<div>' + new Date().toLocaleTimeString() + ': ' + message + '</div>';
+        }
+
+        // Test if localStorage is working
+        function testLocalStorage() {
+            try {
+                localStorage.setItem('test', '123');
+                const testValue = localStorage.getItem('test');
+                debugLog('LocalStorage test: ' + (testValue === '123' ? 'WORKING' : 'BROKEN'));
+            } catch (error) {
+                debugLog('LocalStorage ERROR: ' + error.message);
+            }
+        }
+
+        // Clear all data
+        function clearAllData() {
+            localStorage.removeItem('dataLogEntries');
             loadLoggedEntries();
-            
-            // Add event listener for form submission
-            form.addEventListener('submit', function(event) {
-                // Prevent the form from submitting the traditional way
-                event.preventDefault();
+            debugLog('All data cleared');
+        }
+
+        // Load entries from storage
+        function loadLoggedEntries() {
+            try {
+                const entries = JSON.parse(localStorage.getItem('dataLogEntries')) || [];
+                const tableBody = document.getElementById('tableBody');
                 
-                // Get the values from the form fields
+                if (entries.length === 0) {
+                    tableBody.innerHTML = '<tr><td colspan="4">No data yet</td></tr>';
+                } else {
+                    tableBody.innerHTML = '';
+                    entries.forEach(entry => {
+                        const row = document.createElement('tr');
+                        row.innerHTML = `
+                            <td>${entry.name}</td>
+                            <td>${entry.date}</td>
+                            <td>${entry.category}</td>
+                            <td>${entry.message}</td>
+                        `;
+                        tableBody.appendChild(row);
+                    });
+                }
+                
+                document.getElementById('debugInfo').innerHTML = 
+                    '<strong>Debug Information:</strong><br>' +
+                    'Entries loaded: ' + entries.length + '<br>' +
+                    'LocalStorage: ' + (typeof localStorage !== 'undefined' ? 'Available' : 'Not Available');
+                    
+            } catch (error) {
+                debugLog('Load error: ' + error.message);
+            }
+        }
+
+        // Form submission
+        document.getElementById('dataForm').addEventListener('submit', function(event) {
+            event.preventDefault();
+            
+            try {
                 const name = document.getElementById('name').value;
                 const date = document.getElementById('date').value;
                 const category = document.getElementById('category').value;
                 const message = document.getElementById('message').value;
                 
-                // Get current timestamp
-                const timestamp = new Date().toLocaleString();
+                const entry = { name, date, category, message, id: Date.now() };
                 
-                // Create an entry object
-                const entry = {
-                    name,
-                    date,
-                    category,
-                    message,
-                    timestamp,
-                    id: Date.now() // Unique ID for each entry
-                };
-                
-                // Save the entry
-                saveEntry(entry);
-                
-                // Add the entry to the table
-                addEntryToTable(entry);
-                
-                // Update entries count
-                updateEntriesCount();
-                
-                // Reset the form
-                form.reset();
-            });
-            
-            // Function to save an entry to localStorage
-            function saveEntry(entry) {
-                // Get existing entries from localStorage or initialize empty array
-                let entries = JSON.parse(localStorage.getItem('dataLogEntries')) || [];
-                
-                // Add the new entry to the array
+                const entries = JSON.parse(localStorage.getItem('dataLogEntries')) || [];
                 entries.push(entry);
-                
-                // Save the updated array back to localStorage
-                localStorage.setItem('dataLogEntries', JSON.stringify(entries));
-            }
-            
-            // Function to load logged entries from localStorage
-            function loadLoggedEntries() {
-                // Get entries from localStorage
-                const entries = JSON.parse(localStorage.getItem('dataLogEntries')) || [];
-                
-                // Clear the "no entries" message if there are entries
-                if (entries.length > 0) {
-                    tableBody.innerHTML = '';
-                }
-                
-                // Add each entry to the table
-                entries.forEach(entry => {
-                    addEntryToTable(entry);
-                });
-                
-                // Update entries count
-                updateEntriesCount();
-            }
-            
-            // Function to add an entry to the table
-            function addEntryToTable(entry) {
-                // Remove the "no entries" row if it exists
-                if (tableBody.querySelector('.empty-table')) {
-                    tableBody.innerHTML = '';
-                }
-                
-                // Create a new table row
-                const row = document.createElement('tr');
-                row.classList.add('fade-in');
-                
-                // Get category class for styling
-                const categoryClass = `category-${entry.category}`;
-                
-                // Create the HTML content for the row
-                row.innerHTML = `
-                    <td>${entry.name}</td>
-                    <td>${entry.date}</td>
-                    <td><span class="category-badge ${categoryClass}">${entry.category}</span></td>
-                    <td>${entry.message}</td>
-                    <td>${entry.timestamp}</td>
-                    <td>
-                        <button class="action-btn" onclick="deleteEntry(${entry.id})" title="Delete entry">🗑️</button>
-                    </td>
-                `;
-                
-                // Add the row to the table
-                tableBody.appendChild(row);
-            }
-            
-            // Function to update entries count
-            function updateEntriesCount() {
-                const entries = JSON.parse(localStorage.getItem('dataLogEntries')) || [];
-                entriesCount.textContent = entries.length;
-            }
-            
-            // Function to delete an entry (global so it can be called from onclick)
-            window.deleteEntry = function(id) {
-                // Get entries from localStorage
-                let entries = JSON.parse(localStorage.getItem('dataLogEntries')) || [];
-                
-                // Filter out the entry to delete
-                entries = entries.filter(entry => entry.id !== id);
-                
-                // Save back to localStorage
                 localStorage.setItem('dataLogEntries', JSON.stringify(entries));
                 
-                // Reload the table
+                debugLog('Entry added: ' + name);
                 loadLoggedEntries();
-            };
-            
-            // Function to export data as CSV
-            window.exportData = function() {
-                const entries = JSON.parse(localStorage.getItem('dataLogEntries')) || [];
+                this.reset();
                 
-                if (entries.length === 0) {
-                    alert('No data to export!');
-                    return;
-                }
-                
-                // Create CSV content
-                let csvContent = 'Name,Date,Category,Message,Timestamp\n';
-                
-                entries.forEach(entry => {
-                    csvContent += `"${entry.name}","${entry.date}","${entry.category}","${entry.message.replace(/"/g, '""')}","${entry.timestamp}"\n`;
-                });
-                
-                // Create download link
-                const encodedUri = encodeURI('data:text/csv;charset=utf-8,' + csvContent);
-                const link = document.createElement('a');
-                link.setAttribute('href', encodedUri);
-                link.setAttribute('download', 'data_logger_export.csv');
-                document.body.appendChild(link);
-                
-                // Trigger download
-                link.click();
-                document.body.removeChild(link);
-                
-                alert('Data exported successfully!');
-            };
+            } catch (error) {
+                debugLog('Submit error: ' + error.message);
+            }
+        });
+
+        // Initial load
+        document.addEventListener('DOMContentLoaded', function() {
+            debugLog('Page loaded');
+            testLocalStorage();
+            loadLoggedEntries();
         });
     </script>
 </body>
