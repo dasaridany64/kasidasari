@@ -94,6 +94,7 @@
             font-weight: 600;
             width: 100%;
             transition: transform 0.3s, box-shadow 0.3s;
+            margin-bottom: 10px;
         }
         
         button:hover {
@@ -103,6 +104,10 @@
         
         button:active {
             transform: translateY(0);
+        }
+        
+        .export-btn {
+            background: linear-gradient(90deg, #27ae60 0%, #2ecc71 100%);
         }
         
         .log-container {
@@ -226,6 +231,14 @@
             color: #4776E6;
         }
         
+        .export-section {
+            background: #f8f9ff;
+            padding: 15px;
+            border-radius: 8px;
+            margin-top: 20px;
+            text-align: center;
+        }
+        
         @keyframes fadeIn {
             from {
                 opacity: 0;
@@ -337,6 +350,11 @@
                     </tr>
                 </tbody>
             </table>
+            
+            <div class="export-section">
+                <button class="export-btn" onclick="exportData()">📥 Export Data to CSV</button>
+                <p><small>Click to download all your data as a CSV file</small></p>
+            </div>
         </div>
     </div>
     
@@ -472,6 +490,36 @@
                 
                 // Reload the table
                 loadLoggedEntries();
+            };
+            
+            // Function to export data as CSV
+            window.exportData = function() {
+                const entries = JSON.parse(localStorage.getItem('dataLogEntries')) || [];
+                
+                if (entries.length === 0) {
+                    alert('No data to export!');
+                    return;
+                }
+                
+                // Create CSV content
+                let csvContent = 'Name,Date,Category,Message,Timestamp\n';
+                
+                entries.forEach(entry => {
+                    csvContent += `"${entry.name}","${entry.date}","${entry.category}","${entry.message.replace(/"/g, '""')}","${entry.timestamp}"\n`;
+                });
+                
+                // Create download link
+                const encodedUri = encodeURI('data:text/csv;charset=utf-8,' + csvContent);
+                const link = document.createElement('a');
+                link.setAttribute('href', encodedUri);
+                link.setAttribute('download', 'data_logger_export.csv');
+                document.body.appendChild(link);
+                
+                // Trigger download
+                link.click();
+                document.body.removeChild(link);
+                
+                alert('Data exported successfully!');
             };
         });
     </script>
