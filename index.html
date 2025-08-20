@@ -3,77 +3,134 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Data Logger Debug</title>
+    <title>Data Logger - Memory Storage</title>
     <style>
         body { 
             font-family: Arial, sans-serif; 
             padding: 20px; 
-            background: #f0f0f0;
+            background: linear-gradient(135deg, #6a11cb 0%, #2575fc 100%);
+            min-height: 100vh;
         }
         .container { 
             background: white; 
-            padding: 20px; 
-            border-radius: 10px; 
-            box-shadow: 0 2px 5px rgba(0,0,0,0.1);
+            padding: 25px; 
+            border-radius: 15px; 
+            box-shadow: 0 10px 30px rgba(0,0,0,0.2);
+            max-width: 800px;
+            margin: 0 auto;
         }
-        .debug-box { 
-            background: #ffe6e6; 
+        .warning-box { 
+            background: #fff3cd; 
+            color: #856404;
             padding: 15px; 
-            margin: 10px 0; 
-            border-radius: 5px; 
-            border: 1px solid #ffcccc;
+            margin: 15px 0; 
+            border-radius: 8px; 
+            border: 1px solid #ffeaa7;
+            text-align: center;
         }
-        input, textarea, select, button { 
+        .form-group {
+            margin-bottom: 20px;
+        }
+        label {
+            display: block;
+            margin-bottom: 5px;
+            font-weight: bold;
+            color: #444;
+        }
+        input, textarea, select { 
             width: 100%; 
-            padding: 10px; 
-            margin: 5px 0; 
-            border: 1px solid #ccc; 
-            border-radius: 4px; 
+            padding: 12px; 
+            border: 2px solid #ddd; 
+            border-radius: 8px; 
+            font-size: 16px;
+        }
+        input:focus, textarea:focus, select:focus {
+            border-color: #4776E6;
+            outline: none;
         }
         button { 
-            background: #4CAF50; 
+            background: linear-gradient(90deg, #4776E6 0%, #8E54E9 100%);
             color: white; 
             border: none; 
-            padding: 12px; 
-            cursor: pointer; 
+            padding: 15px 25px;
+            border-radius: 8px; 
+            cursor: pointer;
+            font-size: 18px;
+            font-weight: bold;
+            width: 100%;
+            margin: 5px 0;
+        }
+        button:hover {
+            opacity: 0.9;
+        }
+        .clear-btn {
+            background: linear-gradient(90deg, #e74c3c 0%, #c0392b 100%);
         }
         table { 
             width: 100%; 
             border-collapse: collapse; 
-            margin-top: 20px; 
+            margin-top: 25px;
+            box-shadow: 0 3px 10px rgba(0,0,0,0.1);
         }
         th, td { 
             border: 1px solid #ddd; 
-            padding: 8px; 
+            padding: 12px; 
             text-align: left; 
         }
         th { 
-            background-color: #f2f2f2; 
+            background: linear-gradient(90deg, #4776E6 0%, #8E54E9 100%);
+            color: white;
+        }
+        tr:nth-child(even) {
+            background-color: #f8f9ff;
+        }
+        tr:hover {
+            background-color: #eef0ff;
         }
     </style>
 </head>
 <body>
     <div class="container">
-        <h1>Data Logger Debug Mode</h1>
+        <h1 style="text-align: center; color: #4776E6;">Data Logger App</h1>
         
-        <div class="debug-box" id="debugInfo">
-            <strong>Debug Information:</strong><br>
-            Status: Loading...
+        <div class="warning-box">
+            ⚠️ <strong>Note:</strong> Data is stored in memory and will be lost when you close the app.
+            Use the Export button to save your data permanently.
         </div>
 
         <form id="dataForm">
-            <input type="text" id="name" placeholder="Name" required>
-            <input type="date" id="date" required>
-            <select id="category" required>
-                <option value="">Select Category</option>
-                <option value="work">Work</option>
-                <option value="personal">Personal</option>
-            </select>
-            <textarea id="message" placeholder="Message" required></textarea>
-            <button type="submit">Add Entry</button>
+            <div class="form-group">
+                <label for="name">Name:</label>
+                <input type="text" id="name" placeholder="Enter your name" required>
+            </div>
+            
+            <div class="form-group">
+                <label for="date">Date:</label>
+                <input type="date" id="date" required>
+            </div>
+            
+            <div class="form-group">
+                <label for="category">Category:</label>
+                <select id="category" required>
+                    <option value="">Select a category</option>
+                    <option value="work">Work</option>
+                    <option value="personal">Personal</option>
+                    <option value="ideas">Ideas</option>
+                    <option value="tasks">Tasks</option>
+                </select>
+            </div>
+            
+            <div class="form-group">
+                <label for="message">Message:</label>
+                <textarea id="message" placeholder="Enter your message" rows="3" required></textarea>
+            </div>
+            
+            <button type="submit">➕ Add Data Entry</button>
         </form>
 
-        <div id="debugOutput"></div>
+        <div style="margin: 20px 0; text-align: center;">
+            <strong>Total Entries: <span id="entriesCount">0</span></strong>
+        </div>
 
         <table>
             <thead>
@@ -82,102 +139,125 @@
                     <th>Date</th>
                     <th>Category</th>
                     <th>Message</th>
+                    <th>Action</th>
                 </tr>
             </thead>
             <tbody id="tableBody">
-                <tr><td colspan="4">No data yet</td></tr>
+                <tr>
+                    <td colspan="5" style="text-align: center; color: #777;">No entries yet. Add your first entry above!</td>
+                </tr>
             </tbody>
         </table>
 
-        <button onclick="clearAllData()" style="background: #ff4444; margin-top: 20px;">Clear All Data</button>
-        <button onclick="testLocalStorage()" style="background: #888;">Test Storage</button>
+        <div style="margin-top: 25px;">
+            <button onclick="exportData()" style="background: linear-gradient(90deg, #27ae60 0%, #2ecc71 100%);">
+                💾 Export Data to CSV
+            </button>
+            <button onclick="clearAllData()" class="clear-btn">
+                🗑️ Clear All Data
+            </button>
+        </div>
     </div>
 
     <script>
-        // Debug function to show messages
-        function debugLog(message) {
-            document.getElementById('debugOutput').innerHTML += '<div>' + new Date().toLocaleTimeString() + ': ' + message + '</div>';
-        }
-
-        // Test if localStorage is working
-        function testLocalStorage() {
-            try {
-                localStorage.setItem('test', '123');
-                const testValue = localStorage.getItem('test');
-                debugLog('LocalStorage test: ' + (testValue === '123' ? 'WORKING' : 'BROKEN'));
-            } catch (error) {
-                debugLog('LocalStorage ERROR: ' + error.message);
+        // SIMPLE MEMORY STORAGE (No localStorage needed!)
+        let dataEntries = [];
+        
+        // Load entries from memory
+        function loadLoggedEntries() {
+            const tableBody = document.getElementById('tableBody');
+            const entriesCount = document.getElementById('entriesCount');
+            
+            if (dataEntries.length === 0) {
+                tableBody.innerHTML = '<tr><td colspan="5" style="text-align: center; color: #777;">No entries yet. Add your first entry above!</td></tr>';
+            } else {
+                tableBody.innerHTML = '';
+                dataEntries.forEach((entry, index) => {
+                    const row = document.createElement('tr');
+                    row.innerHTML = `
+                        <td>${entry.name}</td>
+                        <td>${entry.date}</td>
+                        <td>${entry.category}</td>
+                        <td>${entry.message}</td>
+                        <td>
+                            <button onclick="deleteEntry(${index})" style="background: #e74c3c; padding: 5px 10px; font-size: 12px;">
+                                Delete
+                            </button>
+                        </td>
+                    `;
+                    tableBody.appendChild(row);
+                });
             }
+            
+            entriesCount.textContent = dataEntries.length;
         }
-
+        
+        // Delete an entry
+        function deleteEntry(index) {
+            dataEntries.splice(index, 1);
+            loadLoggedEntries();
+        }
+        
         // Clear all data
         function clearAllData() {
-            localStorage.removeItem('dataLogEntries');
-            loadLoggedEntries();
-            debugLog('All data cleared');
-        }
-
-        // Load entries from storage
-        function loadLoggedEntries() {
-            try {
-                const entries = JSON.parse(localStorage.getItem('dataLogEntries')) || [];
-                const tableBody = document.getElementById('tableBody');
-                
-                if (entries.length === 0) {
-                    tableBody.innerHTML = '<tr><td colspan="4">No data yet</td></tr>';
-                } else {
-                    tableBody.innerHTML = '';
-                    entries.forEach(entry => {
-                        const row = document.createElement('tr');
-                        row.innerHTML = `
-                            <td>${entry.name}</td>
-                            <td>${entry.date}</td>
-                            <td>${entry.category}</td>
-                            <td>${entry.message}</td>
-                        `;
-                        tableBody.appendChild(row);
-                    });
-                }
-                
-                document.getElementById('debugInfo').innerHTML = 
-                    '<strong>Debug Information:</strong><br>' +
-                    'Entries loaded: ' + entries.length + '<br>' +
-                    'LocalStorage: ' + (typeof localStorage !== 'undefined' ? 'Available' : 'Not Available');
-                    
-            } catch (error) {
-                debugLog('Load error: ' + error.message);
+            if (confirm('Are you sure you want to delete all data?')) {
+                dataEntries = [];
+                loadLoggedEntries();
+                alert('All data has been cleared!');
             }
         }
-
+        
+        // Export data as CSV
+        function exportData() {
+            if (dataEntries.length === 0) {
+                alert('No data to export!');
+                return;
+            }
+            
+            let csvContent = 'Name,Date,Category,Message\n';
+            dataEntries.forEach(entry => {
+                csvContent += `"${entry.name}","${entry.date}","${entry.category}","${entry.message.replace(/"/g, '""')}"\n`;
+            });
+            
+            const encodedUri = encodeURI('data:text/csv;charset=utf-8,' + csvContent);
+            const link = document.createElement('a');
+            link.setAttribute('href', encodedUri);
+            link.setAttribute('download', 'data_logger_export.csv');
+            document.body.appendChild(link);
+            link.click();
+            document.body.removeChild(link);
+            
+            alert('Data exported successfully! Download the CSV file from your browser downloads.');
+        }
+        
         // Form submission
         document.getElementById('dataForm').addEventListener('submit', function(event) {
             event.preventDefault();
             
-            try {
-                const name = document.getElementById('name').value;
-                const date = document.getElementById('date').value;
-                const category = document.getElementById('category').value;
-                const message = document.getElementById('message').value;
-                
-                const entry = { name, date, category, message, id: Date.now() };
-                
-                const entries = JSON.parse(localStorage.getItem('dataLogEntries')) || [];
-                entries.push(entry);
-                localStorage.setItem('dataLogEntries', JSON.stringify(entries));
-                
-                debugLog('Entry added: ' + name);
-                loadLoggedEntries();
-                this.reset();
-                
-            } catch (error) {
-                debugLog('Submit error: ' + error.message);
-            }
+            const name = document.getElementById('name').value;
+            const date = document.getElementById('date').value;
+            const category = document.getElementById('category').value;
+            const message = document.getElementById('message').value;
+            
+            const entry = {
+                name,
+                date,
+                category,
+                message,
+                id: Date.now()
+            };
+            
+            dataEntries.push(entry);
+            loadLoggedEntries();
+            
+            // Reset form
+            this.reset();
+            
+            alert('Entry added successfully!');
         });
-
+        
         // Initial load
         document.addEventListener('DOMContentLoaded', function() {
-            debugLog('Page loaded');
-            testLocalStorage();
             loadLoggedEntries();
         });
     </script>
