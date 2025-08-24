@@ -45,7 +45,7 @@
     <div class="container">
         <header>
             <h1>Data Logger App</h1>
-            <p class="app-description">Store and manage your data entries</p>
+            <p class="app-description">Save your Data for Monthly progress</p>
         </header>
         
         <!-- CHANGE THE WARNING MESSAGE -->
@@ -56,8 +56,8 @@
         <div class="form-container">
             <form id="dataForm">
                 <div class="form-group">
-                    <label for="name">Name</label>
-                    <input type="text" id="name" placeholder="Enter your name" required>
+                    <label for="name">Company Name</label>
+                    <input type="text" id="name" placeholder="Enter Company name" required>
                 </div>
                 
                 <div class="form-group">
@@ -66,14 +66,13 @@
                 </div>
                 
                 <div class="form-group">
-                    <label for="category">Category</label>
+                    <label for="category">Type of Visit</label>
                     <select id="category" required>
-                        <option value="">Select a category</option>
-                        <option value="work">Work</option>
-                        <option value="personal">Personal</option>
-                        <option value="ideas">Ideas</option>
-                        <option value="tasks">Tasks</option>
-                        <option value="other">Other</option>
+                        <option value="">Select Type</option>
+                        <option value="work">Local 1st half</option>
+                        <option value="personal">Local 2nd half</option>
+                        <option value="ideas">Outstation</option>
+                        <option value="tasks">In office</option>
                     </select>
                 </div>
                 
@@ -261,3 +260,4 @@
     </script>
 </body>
 </html>
+
