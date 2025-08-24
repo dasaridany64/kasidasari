@@ -23,6 +23,8 @@
         button:active { transform: translateY(0); }
         .export-btn { background: linear-gradient(90deg, #27ae60 0%, #2ecc71 100%); }
         .clear-btn { background: linear-gradient(90deg, #e74c3c 0%, #c0392b 100%); }
+        .email-btn { background: linear-gradient(90deg, #3498db 0%, #2980b9 100%); }
+        .whatsapp-btn { background: linear-gradient(90deg, #25D366 0%, #128C7E 100%); }
         .log-container { padding: 25px; border-top: 1px solid #eee; }
         h2 { color: #4776E6; margin-bottom: 20px; text-align: center; font-size: 1.8rem; }
         .entries-count { text-align: center; margin: 15px 0; font-weight: 600; color: #4776E6; font-size: 1.2rem; }
@@ -30,6 +32,14 @@
         .action-buttons { display: flex; gap: 10px; margin-top: 20px; }
         @keyframes fadeIn { from { opacity: 0; transform: translateY(20px); } to { opacity: 1; transform: translateY(0); } }
         footer { color: white; text-align: center; margin-top: 20px; opacity: 0.8; }
+        
+        /* Modal styles */
+        .modal { display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%; background-color: rgba(0, 0, 0, 0.5); z-index: 1000; justify-content: center; align-items: center; }
+        .modal-content { background-color: white; padding: 25px; border-radius: 12px; width: 90%; max-width: 500px; box-shadow: 0 5px 20px rgba(0, 0, 0, 0.2); }
+        .modal-header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 20px; }
+        .modal-title { font-size: 1.5rem; color: #4776E6; font-weight: 600; }
+        .close-modal { font-size: 1.8rem; cursor: pointer; color: #777; }
+        .modal-form-group { margin-bottom: 20px; }
         
         /* ADDED TABLE STYLES */
         .table-container {
@@ -92,15 +102,16 @@
                 padding: 8px 10px;
                 font-size: 14px;
             }
+            
+            .action-buttons {
+                flex-direction: column;
+            }
         }
         
         @media (max-width: 600px) { 
             .container { border-radius: 10px; } 
             h1 { font-size: 1.8rem; } 
             .form-container, .log-container { padding: 20px; } 
-            .action-buttons {
-                flex-direction: column;
-            }
         }
     </style>
 </head>
@@ -172,8 +183,52 @@
             
             <div class="action-buttons">
                 <button class="export-btn" onclick="exportData()">📥 Export Data to CSV</button>
+                <button class="email-btn" onclick="openEmailModal()">📧 Send via Email</button>
+                <button class="whatsapp-btn" onclick="openWhatsAppModal()">💬 Send via WhatsApp</button>
                 <button class="clear-btn" onclick="clearAllData()">🗑️ Clear All Data</button>
             </div>
+        </div>
+    </div>
+    
+    <!-- Email Modal -->
+    <div class="modal" id="emailModal">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h3 class="modal-title">Send Data via Email</h3>
+                <span class="close-modal" onclick="closeModal('emailModal')">&times;</span>
+            </div>
+            <div class="modal-form-group">
+                <label for="emailTo">Recipient Email</label>
+                <input type="email" id="emailTo" placeholder="Enter recipient email" required>
+            </div>
+            <div class="modal-form-group">
+                <label for="emailSubject">Subject</label>
+                <input type="text" id="emailSubject" placeholder="Enter email subject" value="Data Logger Export" required>
+            </div>
+            <div class="modal-form-group">
+                <label for="emailBody">Message</label>
+                <textarea id="emailBody" placeholder="Enter your message" rows="4">Please find attached the data export from Data Logger App.</textarea>
+            </div>
+            <button class="email-btn" onclick="sendEmail()">Send Email</button>
+        </div>
+    </div>
+    
+    <!-- WhatsApp Modal -->
+    <div class="modal" id="whatsappModal">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h3 class="modal-title">Send Data via WhatsApp</h3>
+                <span class="close-modal" onclick="closeModal('whatsappModal')">&times;</span>
+            </div>
+            <div class="modal-form-group">
+                <label for="whatsappNumber">Phone Number (with country code)</label>
+                <input type="text" id="whatsappNumber" placeholder="e.g., 1234567890" required>
+            </div>
+            <div class="modal-form-group">
+                <label for="whatsappMessage">Message Preview</label>
+                <textarea id="whatsappMessage" rows="4" readonly></textarea>
+            </div>
+            <button class="whatsapp-btn" onclick="sendWhatsApp()">Open in WhatsApp</button>
         </div>
     </div>
     
@@ -189,6 +244,106 @@
 
         function saveEntries(entries) {
             localStorage.setItem('dataLogEntries', JSON.stringify(entries));
+        }
+        
+        // Format data for sharing
+        function formatDataForSharing() {
+            const entries = getEntries();
+            if (entries.length === 0) return "No data available.";
+            
+            let text = "Data Logger Export\n\n";
+            entries.forEach((entry, index) => {
+                text += `Entry ${index + 1}:\n`;
+                text += `Company: ${entry.name}\n`;
+                text += `Date: ${entry.date}\n`;
+                text += `Visit Type: ${entry.category}\n`;
+                text += `Notes: ${entry.message}\n`;
+                text += `Logged: ${entry.timestamp}\n\n`;
+            });
+            
+            return text;
+        }
+        
+        // Modal functions
+        function openEmailModal() {
+            const entries = getEntries();
+            if (entries.length === 0) {
+                alert('No data to send!');
+                return;
+            }
+            document.getElementById('emailModal').style.display = 'flex';
+        }
+        
+        function openWhatsAppModal() {
+            const entries = getEntries();
+            if (entries.length === 0) {
+                alert('No data to send!');
+                return;
+            }
+            document.getElementById('whatsappMessage').value = formatDataForSharing();
+            document.getElementById('whatsappModal').style.display = 'flex';
+        }
+        
+        function closeModal(modalId) {
+            document.getElementById(modalId).style.display = 'none';
+        }
+        
+        // Email function
+        function sendEmail() {
+            const emailTo = document.getElementById('emailTo').value;
+            const emailSubject = document.getElementById('emailSubject').value;
+            const emailBody = document.getElementById('emailBody').value;
+            
+            if (!emailTo) {
+                alert('Please enter recipient email!');
+                return;
+            }
+            
+            // Create CSV content
+            const entries = getEntries();
+            let csvContent = 'Company Name,Date,Type of Visit,Notes,Logged On\n';
+            
+            entries.forEach(entry => {
+                csvContent += `"${entry.name}","${entry.date}","${entry.category}","${entry.message.replace(/"/g, '""')}","${entry.timestamp}"\n`;
+            });
+            
+            // Encode the CSV content
+            const encodedCsv = encodeURIComponent(csvContent);
+            
+            // Create mailto link with attachment simulation
+            const mailtoLink = `mailto:${emailTo}?subject=${encodeURIComponent(emailSubject)}&body=${encodeURIComponent(emailBody + '\n\nData is attached in CSV format.')}`;
+            
+            // Open email client
+            window.location.href = mailtoLink;
+            
+            // Close the modal
+            closeModal('emailModal');
+            
+            // Inform user about the CSV
+            alert('Email client opened. Please attach the CSV file manually by exporting it first.');
+        }
+        
+        // WhatsApp function
+        function sendWhatsApp() {
+            const phoneNumber = document.getElementById('whatsappNumber').value;
+            const message = formatDataForSharing();
+            
+            if (!phoneNumber) {
+                alert('Please enter a phone number!');
+                return;
+            }
+            
+            // Format phone number (remove any non-digit characters)
+            const formattedNumber = phoneNumber.replace(/\D/g, '');
+            
+            // Create WhatsApp link
+            const whatsappLink = `https://wa.me/${formattedNumber}?text=${encodeURIComponent(message)}`;
+            
+            // Open WhatsApp
+            window.open(whatsappLink, '_blank');
+            
+            // Close the modal
+            closeModal('whatsappModal');
         }
         
         // Wait for the page to fully load
@@ -341,6 +496,13 @@
                     logEntriesContainer.innerHTML = '<tr><td colspan="5" class="empty-table">No entries yet. Submit your first entry!</td></tr>';
                     updateEntriesCount();
                     alert('All data has been cleared!');
+                }
+            };
+            
+            // Close modals when clicking outside
+            window.onclick = function(event) {
+                if (event.target.classList.contains('modal')) {
+                    event.target.style.display = 'none';
                 }
             };
         });
