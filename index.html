@@ -89,9 +89,24 @@
             <h2>Logged Entries</h2>
             <div class="entries-count">Total entries: <span id="entriesCount">0</span></div>
             
-            <div id="logEntries" class="log-entries">
-                <div class="empty-log">No entries yet. Submit your first entry!</div>
-            </div>
+            <div class="table-container">
+    <table class="log-table">
+        <thead>
+            <tr>
+                <th>Company Name</th>
+                <th>Date</th>
+                <th>Type of Visit</th>
+                <th>Notes</th>
+                <th>Logged On</th>
+            </tr>
+        </thead>
+        <tbody id="logEntries">
+            <tr>
+                <td colspan="5" class="empty-log">No entries yet. Submit your first entry!</td>
+            </tr>
+        </tbody>
+    </table>
+</div>
             
             <div class="action-buttons">
                 <button class="export-btn" onclick="exportData()">📥 Export Data to CSV</button>
@@ -184,33 +199,32 @@
             }
             
             // Function to add an entry to the display
-            function addEntryToDisplay(entry) {
-                // Remove the "no entries" message if it exists
-                if (logEntriesContainer.querySelector('.empty-log')) {
-                    logEntriesContainer.innerHTML = '';
-                }
-                
-                // Create a new entry element
-                const entryElement = document.createElement('div');
-                entryElement.classList.add('log-entry');
-                
-                // Get category class for styling
-                const categoryClass = `category-${entry.category}`;
-                
-                // Create the HTML content for the entry
-                entryElement.innerHTML = `
-                    <div class="log-header">
-                        <span class="log-name">${entry.name}</span>
-                        <span class="log-category">${entry.category}</span>
-                    </div>
-                    <div class="log-message">${entry.message}</div>
-                    <div class="log-timestamp">Logged on: ${entry.timestamp}</div>
-                `;
-                
-                // Add the entry to the top of the log
-                logEntriesContainer.prepend(entryElement);
-            }
-            
+            // Function to add an entry to the display
+function addEntryToDisplay(entry) {
+    // Remove the "no entries" message if it exists
+    const emptyRow = logEntriesContainer.querySelector('.empty-log');
+    if (emptyRow) {
+        logEntriesContainer.innerHTML = '';
+    }
+    
+    // Create a new table row
+    const row = document.createElement('tr');
+    
+    // Format the date for better readability
+    const formattedDate = new Date(entry.date).toLocaleDateString();
+    
+    // Create the HTML content for the row
+    row.innerHTML = `
+        <td>${entry.name}</td>
+        <td>${formattedDate}</td>
+        <td><span class="table-category">${entry.category}</span></td>
+        <td>${entry.message}</td>
+        <td>${entry.timestamp}</td>
+    `;
+    
+    // Add the row to the table
+    logEntriesContainer.appendChild(row);
+}
             // Function to update entries count
             function updateEntriesCount() {
                 const entries = getEntries();
@@ -248,16 +262,18 @@
             };
             
             // Function to clear all data
-            window.clearAllData = function() {
-                if (confirm('Are you sure you want to delete all data? This cannot be undone.')) {
-                    localStorage.removeItem('dataLogEntries');
-                    logEntriesContainer.innerHTML = '<div class="empty-log">No entries yet. Submit your first entry!</div>';
-                    updateEntriesCount();
-                    alert('All data has been cleared!');
-                }
-            };
+           // Function to clear all data
+window.clearAllData = function() {
+    if (confirm('Are you sure you want to delete all data? This cannot be undone.')) {
+        localStorage.removeItem('dataLogEntries');
+        logEntriesContainer.innerHTML = '<tr><td colspan="5" class="empty-log">No entries yet. Submit your first entry!</td></tr>';
+        updateEntriesCount();
+        alert('All data has been cleared!');
+    }
+};
         });
     </script>
 </body>
 </html>
+
 
