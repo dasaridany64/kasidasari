@@ -4,113 +4,105 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Data Logger App</title>
-<style>
-    /* KEEP ALL YOUR CSS THE SAME - NO CHANGES NEEDED */
-    * { box-sizing: border-box; margin: 0; padding: 0; font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; }
-    body { background: linear-gradient(135deg, #6a11cb 0%, #2575fc 100%); color: #333; min-height: 100vh; padding: 20px; display: flex; flex-direction: column; align-items: center; }
-    .container { width: 100%; max-width: 800px; background-color: white; border-radius: 15px; box-shadow: 0 10px 30px rgba(0, 0, 0, 0.2); overflow: hidden; margin: 20px 0; }
-    header { background: linear-gradient(90deg, #4776E6 0%, #8E54E9 100%); color: white; padding: 20px; text-align: center; }
-    h1 { font-size: 2.2rem; margin-bottom: 10px; }
-    .app-description { font-size: 1.1rem; opacity: 0.9; }
-    .warning-banner { background: #fff3cd; color: #856404; padding: 15px; text-align: center; border-bottom: 1px solid #ffeaa7; }
-    .form-container { padding: 25px; }
-    .form-group { margin-bottom: 20px; }
-    label { display: block; margin-bottom: 8px; font-weight: 600; color: #444; }
-    input, select, textarea { width: 100%; padding: 14px; border: 2px solid #ddd; border-radius: 8px; font-size: 16px; transition: border-color 0.3s; }
-    input:focus, select:focus, textarea:focus { border-color: #4776E6; outline: none; }
-    textarea { min-height: 120px; resize: vertical; }
-    button { background: linear-gradient(90deg, #4776E6 0%, #8E54E9 100%); color: white; border: none; padding: 15px 25px; border-radius: 8px; cursor: pointer; font-size: 18px; font-weight: 600; width: 100%; transition: transform 0.3s, box-shadow 0.3s; margin-bottom: 10px; }
-    button:hover { transform: translateY(-2px); box-shadow: 0 5px 15px rgba(71, 118, 230, 0.4); }
-    button:active { transform: translateY(0); }
-    .export-btn { background: linear-gradient(90deg, #27ae60 0%, #2ecc71 100%); }
-    .clear-btn { background: linear-gradient(90deg, #e74c3c 0%, #c0392b 100%); }
-    .log-container { padding: 25px; border-top: 1px solid #eee; }
-    h2 { color: #4776E6; margin-bottom: 20px; text-align: center; font-size: 1.8rem; }
-    .entries-count { text-align: center; margin: 15px 0; font-weight: 600; color: #4776E6; font-size: 1.2rem; }
-    .log-entries { max-height: 400px; overflow-y: auto; padding-right: 10px; }
-    .log-entry { background-color: #f8f9ff; border-left: 5px solid #4776E6; padding: 18px; margin-bottom: 18px; border-radius: 8px; box-shadow: 0 3px 10px rgba(0, 0, 0, 0.08); animation: fadeIn 0.5s ease-out; }
-    .log-header { display: flex; justify-content: space-between; margin-bottom: 12px; align-items: center; }
-    .log-name { font-weight: bold; color: #4776E6; font-size: 1.2rem; }
-    .log-category { background-color: #e0e6ff; color: #4776E6; padding: 5px 12px; border-radius: 20px; font-size: 0.9rem; font-weight: 600; }
-    .log-message { margin-bottom: 12px; line-height: 1.5; }
-    .log-timestamp { color: #777; font-size: 0.9rem; text-align: right; }
-    .empty-log { text-align: center; color: #777; padding: 30px; font-style: italic; }
-    .action-buttons { display: flex; gap: 10px; margin-top: 20px; }
-    @keyframes fadeIn { from { opacity: 0; transform: translateY(20px); } to { opacity: 1; transform: translateY(0); } }
-    footer { color: white; text-align: center; margin-top: 20px; opacity: 0.8; }
-    
-    /* ADDED TABLE STYLES */
-    .table-container {
-        max-height: 400px;
-        overflow-y: auto;
-        margin-bottom: 20px;
-        border: 1px solid #eee;
-        border-radius: 8px;
-    }
-    
-    .log-table {
-        width: 100%;
-        border-collapse: collapse;
-    }
-    
-    .log-table th,
-    .log-table td {
-        padding: 12px 15px;
-        text-align: left;
-        border-bottom: 1px solid #eee;
-    }
-    
-    .log-table th {
-        background-color: #f8f9ff;
-        font-weight: 600;
-        color: #4776E6;
-        position: sticky;
-        top: 0;
-    }
-    
-    .log-table tr:hover {
-        background-color: #f5f8ff;
-    }
-    
-    .table-category {
-        background-color: #e0e6ff;
-        color: #4776E6;
-        padding: 4px 10px;
-        border-radius: 20px;
-        font-size: 0.85rem;
-        font-weight: 600;
-        display: inline-block;
-    }
-    
-    .empty-table {
-        text-align: center;
-        color: #777;
-        padding: 30px;
-        font-style: italic;
-    }
-    
-    @media (max-width: 768px) {
-        .log-table {
-            display: block;
-            overflow-x: auto;
+    <style>
+        * { box-sizing: border-box; margin: 0; padding: 0; font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; }
+        body { background: linear-gradient(135deg, #6a11cb 0%, #2575fc 100%); color: #333; min-height: 100vh; padding: 20px; display: flex; flex-direction: column; align-items: center; }
+        .container { width: 100%; max-width: 800px; background-color: white; border-radius: 15px; box-shadow: 0 10px 30px rgba(0, 0, 0, 0.2); overflow: hidden; margin: 20px 0; }
+        header { background: linear-gradient(90deg, #4776E6 0%, #8E54E9 100%); color: white; padding: 20px; text-align: center; }
+        h1 { font-size: 2.2rem; margin-bottom: 10px; }
+        .app-description { font-size: 1.1rem; opacity: 0.9; }
+        .warning-banner { background: #fff3cd; color: #856404; padding: 15px; text-align: center; border-bottom: 1px solid #ffeaa7; }
+        .form-container { padding: 25px; }
+        .form-group { margin-bottom: 20px; }
+        label { display: block; margin-bottom: 8px; font-weight: 600; color: #444; }
+        input, select, textarea { width: 100%; padding: 14px; border: 2px solid #ddd; border-radius: 8px; font-size: 16px; transition: border-color 0.3s; }
+        input:focus, select:focus, textarea:focus { border-color: #4776E6; outline: none; }
+        textarea { min-height: 120px; resize: vertical; }
+        button { background: linear-gradient(90deg, #4776E6 0%, #8E54E9 100%); color: white; border: none; padding: 15px 25px; border-radius: 8px; cursor: pointer; font-size: 18px; font-weight: 600; width: 100%; transition: transform 0.3s, box-shadow 0.3s; margin-bottom: 10px; }
+        button:hover { transform: translateY(-2px); box-shadow: 0 5px 15px rgba(71, 118, 230, 0.4); }
+        button:active { transform: translateY(0); }
+        .export-btn { background: linear-gradient(90deg, #27ae60 0%, #2ecc71 100%); }
+        .clear-btn { background: linear-gradient(90deg, #e74c3c 0%, #c0392b 100%); }
+        .log-container { padding: 25px; border-top: 1px solid #eee; }
+        h2 { color: #4776E6; margin-bottom: 20px; text-align: center; font-size: 1.8rem; }
+        .entries-count { text-align: center; margin: 15px 0; font-weight: 600; color: #4776E6; font-size: 1.2rem; }
+        .empty-log { text-align: center; color: #777; padding: 30px; font-style: italic; }
+        .action-buttons { display: flex; gap: 10px; margin-top: 20px; }
+        @keyframes fadeIn { from { opacity: 0; transform: translateY(20px); } to { opacity: 1; transform: translateY(0); } }
+        footer { color: white; text-align: center; margin-top: 20px; opacity: 0.8; }
+        
+        /* ADDED TABLE STYLES */
+        .table-container {
+            max-height: 400px;
+            overflow-y: auto;
+            margin-bottom: 20px;
+            border: 1px solid #eee;
+            border-radius: 8px;
         }
         
-        .log-table th, 
+        .log-table {
+            width: 100%;
+            border-collapse: collapse;
+        }
+        
+        .log-table th,
         .log-table td {
-            padding: 8px 10px;
-            font-size: 14px;
+            padding: 12px 15px;
+            text-align: left;
+            border-bottom: 1px solid #eee;
         }
-    }
-    
-    @media (max-width: 600px) { 
-        .container { border-radius: 10px; } 
-        h1 { font-size: 1.8rem; } 
-        .form-container, .log-container { padding: 20px; } 
-        .action-buttons {
-            flex-direction: column;
+        
+        .log-table th {
+            background-color: #f8f9ff;
+            font-weight: 600;
+            color: #4776E6;
+            position: sticky;
+            top: 0;
         }
-    }
-</style>
+        
+        .log-table tr:hover {
+            background-color: #f5f8ff;
+        }
+        
+        .table-category {
+            background-color: #e0e6ff;
+            color: #4776E6;
+            padding: 4px 10px;
+            border-radius: 20px;
+            font-size: 0.85rem;
+            font-weight: 600;
+            display: inline-block;
+        }
+        
+        .empty-table {
+            text-align: center;
+            color: #777;
+            padding: 30px;
+            font-style: italic;
+        }
+        
+        @media (max-width: 768px) {
+            .log-table {
+                display: block;
+                overflow-x: auto;
+            }
+            
+            .log-table th, 
+            .log-table td {
+                padding: 8px 10px;
+                font-size: 14px;
+            }
+        }
+        
+        @media (max-width: 600px) { 
+            .container { border-radius: 10px; } 
+            h1 { font-size: 1.8rem; } 
+            .form-container, .log-container { padding: 20px; } 
+            .action-buttons {
+                flex-direction: column;
+            }
+        }
+    </style>
 </head>
 <body>
     <div class="container">
@@ -119,7 +111,6 @@
             <p class="app-description">Save your Data for Monthly progress</p>
         </header>
         
-        <!-- CHANGE THE WARNING MESSAGE -->
         <div class="warning-banner">
             ✅ <strong>Android App:</strong> Data is stored permanently on your device!
         </div>
@@ -140,10 +131,10 @@
                     <label for="category">Type of Visit</label>
                     <select id="category" required>
                         <option value="">Select Type</option>
-                        <option value="work">Local 1st half</option>
-                        <option value="personal">Local 2nd half</option>
-                        <option value="ideas">Outstation</option>
-                        <option value="tasks">In office</option>
+                        <option value="Local 1st half">Local 1st half</option>
+                        <option value="Local 2nd half">Local 2nd half</option>
+                        <option value="Outstation">Outstation</option>
+                        <option value="In office">In office</option>
                     </select>
                 </div>
                 
@@ -161,23 +152,23 @@
             <div class="entries-count">Total entries: <span id="entriesCount">0</span></div>
             
             <div class="table-container">
-    <table class="log-table">
-        <thead>
-            <tr>
-                <th>Company Name</th>
-                <th>Date</th>
-                <th>Type of Visit</th>
-                <th>Notes</th>
-                <th>Logged On</th>
-            </tr>
-        </thead>
-        <tbody id="logEntries">
-            <tr>
-                <td colspan="5" class="empty-log">No entries yet. Submit your first entry!</td>
-            </tr>
-        </tbody>
-    </table>
-</div>
+                <table class="log-table">
+                    <thead>
+                        <tr>
+                            <th>Company Name</th>
+                            <th>Date</th>
+                            <th>Type of Visit</th>
+                            <th>Notes</th>
+                            <th>Logged On</th>
+                        </tr>
+                    </thead>
+                    <tbody id="logEntries">
+                        <tr>
+                            <td colspan="5" class="empty-table">No entries yet. Submit your first entry!</td>
+                        </tr>
+                    </tbody>
+                </table>
+            </div>
             
             <div class="action-buttons">
                 <button class="export-btn" onclick="exportData()">📥 Export Data to CSV</button>
@@ -207,6 +198,9 @@
             const logEntriesContainer = document.getElementById('logEntries');
             const entriesCount = document.getElementById('entriesCount');
             
+            // Set today's date as default
+            document.getElementById('date').valueAsDate = new Date();
+            
             // Load existing entries when the page loads
             loadLoggedEntries();
             
@@ -220,6 +214,12 @@
                 const date = document.getElementById('date').value;
                 const category = document.getElementById('category').value;
                 const message = document.getElementById('message').value;
+                
+                // Validate form
+                if (!name || !date || !category || !message) {
+                    alert('Please fill all fields!');
+                    return;
+                }
                 
                 // Get current timestamp
                 const timestamp = new Date().toLocaleString();
@@ -245,8 +245,10 @@
                 // Update entries count
                 updateEntriesCount();
                 
-                // Reset the form
-                form.reset();
+                // Reset the form (but keep the date as today)
+                document.getElementById('name').value = '';
+                document.getElementById('category').value = '';
+                document.getElementById('message').value = '';
                 
                 alert('Entry added successfully!');
             });
@@ -270,32 +272,32 @@
             }
             
             // Function to add an entry to the display
-            // Function to add an entry to the display
-function addEntryToDisplay(entry) {
-    // Remove the "no entries" message if it exists
-    const emptyRow = logEntriesContainer.querySelector('.empty-log');
-    if (emptyRow) {
-        logEntriesContainer.innerHTML = '';
-    }
-    
-    // Create a new table row
-    const row = document.createElement('tr');
-    
-    // Format the date for better readability
-    const formattedDate = new Date(entry.date).toLocaleDateString();
-    
-    // Create the HTML content for the row
-    row.innerHTML = `
-        <td>${entry.name}</td>
-        <td>${formattedDate}</td>
-        <td><span class="table-category">${entry.category}</span></td>
-        <td>${entry.message}</td>
-        <td>${entry.timestamp}</td>
-    `;
-    
-    // Add the row to the table
-    logEntriesContainer.appendChild(row);
-}
+            function addEntryToDisplay(entry) {
+                // Remove the "no entries" message if it exists
+                const emptyRow = logEntriesContainer.querySelector('.empty-table');
+                if (emptyRow) {
+                    logEntriesContainer.innerHTML = '';
+                }
+                
+                // Format the date for display
+                const formattedDate = new Date(entry.date).toLocaleDateString();
+                
+                // Create a new table row
+                const row = document.createElement('tr');
+                
+                // Create the HTML content for the row
+                row.innerHTML = `
+                    <td>${entry.name}</td>
+                    <td>${formattedDate}</td>
+                    <td><span class="table-category">${entry.category}</span></td>
+                    <td>${entry.message}</td>
+                    <td>${entry.timestamp}</td>
+                `;
+                
+                // Add the row to the table
+                logEntriesContainer.appendChild(row);
+            }
+            
             // Function to update entries count
             function updateEntriesCount() {
                 const entries = getEntries();
@@ -312,7 +314,7 @@ function addEntryToDisplay(entry) {
                 }
                 
                 // Create CSV content
-                let csvContent = 'Name,Date,Category,Message,Timestamp\n';
+                let csvContent = 'Company Name,Date,Type of Visit,Notes,Logged On\n';
                 
                 entries.forEach(entry => {
                     csvContent += `"${entry.name}","${entry.date}","${entry.category}","${entry.message.replace(/"/g, '""')}","${entry.timestamp}"\n`;
@@ -333,19 +335,15 @@ function addEntryToDisplay(entry) {
             };
             
             // Function to clear all data
-           // Function to clear all data
-window.clearAllData = function() {
-    if (confirm('Are you sure you want to delete all data? This cannot be undone.')) {
-        localStorage.removeItem('dataLogEntries');
-        logEntriesContainer.innerHTML = '<tr><td colspan="5" class="empty-log">No entries yet. Submit your first entry!</td></tr>';
-        updateEntriesCount();
-        alert('All data has been cleared!');
-    }
-};
+            window.clearAllData = function() {
+                if (confirm('Are you sure you want to delete all data? This cannot be undone.')) {
+                    localStorage.removeItem('dataLogEntries');
+                    logEntriesContainer.innerHTML = '<tr><td colspan="5" class="empty-table">No entries yet. Submit your first entry!</td></tr>';
+                    updateEntriesCount();
+                    alert('All data has been cleared!');
+                }
+            };
         });
     </script>
 </body>
 </html>
-
-
-
